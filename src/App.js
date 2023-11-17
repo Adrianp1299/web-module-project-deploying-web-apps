@@ -1,46 +1,38 @@
-import React, { useState } from 'react';
+import React from 'react';
 import './App.css';
-import Todo from './components/Todo';
+import Form from './components/Form'
+import TodoList from './components/TodoList'
 
-function App() {
-  const  [ todos, setTodos ] = useState([]);
-  const [ todo, setTodo ] = useState({
-    activity:""
+const initialTodos = []
+
+export default class App extends React.Component {
+ state = {
+  todos: initialTodos
+ }
+
+ addTodo = (name) => {
+  this.setState ({
+    ...this.state, 
+    todos: this.state.todos.concat({id: Date.now(), name, completed: false})
   })
-
-  const handleChange = (e) => {
-    setTodo({
-      [e.target.name]: e.target.value
-    })
-    console.log(todo);
-  }
-
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    let activityShape = {
-      activity: todo,
-      id:Date.now(),
-      complete: false
-    }
-
-    setTodos({
-      ...todos,
-      activityShape
-    })
-  }
-
-  return (
-    <div className="App">
-      <h1>Its working</h1>
-      <div>
-      {todos.map(todo=> <Todo activity={todo.activity} key={todo.id} complete={todo.complete}/>)}
-      </div>
-      <form onSubmit={handleSubmit}>
-        <input name="activity" onChange={handleChange} placeholder='Activity'/>
-        <button>+</button>
-      </form>
-    </div>
-  );
 }
 
-export default App;
+toggleCompletion = id => {
+  this.setState ({
+    ...this.state,
+    todos: this.state.todos.map(td => {
+      if (id == td.id) return { ...td, completed: !td.completed }
+      return td
+    })
+  })
+}
+
+  render () { 
+    return (
+      <div>
+        <Form addTodo={this.addTodo} />
+        <TodoList todos={this.state.todos} toggleCompletion={this.toggleCompletion} />
+      </div>
+    )
+    }
+}
